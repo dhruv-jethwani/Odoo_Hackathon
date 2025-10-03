@@ -1,4 +1,4 @@
 from flask import Blueprint
 
-auth_bp = Blueprint('handlers', __name__)
+auth_bp = Blueprint('auth', __name__)
 

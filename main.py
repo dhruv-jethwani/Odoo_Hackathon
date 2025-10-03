@@ -2,10 +2,14 @@ from flask import Flask
 from db import db
 from db.users import User
 from handlers.auth import auth_bp
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://Dhruv:odoo_password123@localhost:3306/odoo_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("SQL_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
