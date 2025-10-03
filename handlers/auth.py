@@ -2,6 +2,7 @@ from . import auth_bp
 from flask import request, make_response, render_template, redirect, url_for
 from db import users
 
+@auth_bp.route("/", methods=["GET"])
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "GET":
@@ -21,6 +22,7 @@ def register():
     )
     users.create_user(user_obj)
     res = make_response(redirect(url_for("auth.home")))
+    return res
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():

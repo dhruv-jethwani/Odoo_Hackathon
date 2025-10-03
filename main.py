@@ -1,5 +1,6 @@
 from flask import Flask
 from db import db
+from db.users import User
 from handlers.auth import auth_bp
 
 app = Flask(__name__)
