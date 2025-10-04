@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="w-full min-h-screen bg-gradient-to-br from-gray-900 via-black to-purple-900 text-white px-4 py-8">
+    <div class="max-w-5xl mx-auto">
+
+        <!-- Heading -->
+        <div class="mb-6 flex items-center justify-between">
+            <h1 class="text-3xl font-bold">Admin Dashboard</h1>
+            <!-- Add User Button -->
+            <button id="openModalBtn"
+                class="bg-violet-500 hover:bg-violet-600 px-4 py-2 rounded-md transition-all duration-300">
+                + Add User
+            </button>
+        </div>
+
+        <!-- Users Table -->
+        <div class="bg-[#181818] shadow-2xl rounded-xl p-6">
+            <h2 class="text-xl font-semibold mb-4">Users</h2>
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-zinc-700">
+                        <th class="p-2">ID</th>
+                        <th class="p-2">Name</th>
+                        <th class="p-2">Email</th>
+                        <th class="p-2">Role</th>
+                        <th class="p-2">Manager</th>
+                        <th class="p-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dummy Users -->
+                    <tr class="border-b border-zinc-700">
+                        <td class="p-2">1</td>
+                        <td class="p-2">Alice Johnson</td>
+                        <td class="p-2">alice@company.com</td>
+                        <td class="p-2">Manager</td>
+                        <td class="p-2">—</td>
+                        <td class="p-2 flex gap-2">
+                            <button
+                                class="bg-green-500 hover:bg-green-600 transition-all duration-300 px-3 py-1 rounded-md text-sm">
+                                Send Password
+                            </button>
+                            <button
+                                class="bg-red-500 hover:bg-red-600 transition-all duration-300 px-3 py-1 rounded-md text-sm">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-zinc-700">
+                        <td class="p-2">2</td>
+                        <td class="p-2">Bob Smith</td>
+                        <td class="p-2">bob@company.com</td>
+                        <td class="p-2">Manager</td>
+                        <td class="p-2">—</td>
+                        <td class="p-2 flex gap-2">
+                            <button
+                                class="bg-green-500 hover:bg-green-600 transition-all duration-300 px-3 py-1 rounded-md text-sm">
+                                Send Password
+                            </button>
+                            <button
+                                class="bg-red-500 hover:bg-red-600 transition-all duration-300 px-3 py-1 rounded-md text-sm">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-zinc-700">
+                        <td class="p-2">3</td>
+                        <td class="p-2">Charlie Brown</td>
+                        <td class="p-2">charlie@company.com</td>
+                        <td class="p-2">Employee</td>
+                        <td class="p-2">Alice Johnson</td>
+                        <td class="p-2 flex gap-2">
+                            <button
+                                class="bg-green-500 hover:bg-green-600 transition-all duration-300 px-3 py-1 rounded-md text-sm">
+                                Send Password
+                            </button>
+                            <button
+                                class="bg-red-500 hover:bg-red-600 transition-all duration-300 px-3 py-1 rounded-md text-sm">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-zinc-700">
+                        <td class="p-2">4</td>
+                        <td class="p-2">David Lee</td>
+                        <td class="p-2">david@company.com</td>
+                        <td class="p-2">Employee</td>
+                        <td class="p-2">Bob Smith</td>
+                        <td class="p-2 flex gap-2">
+                            <button
+                                class="bg-green-500 hover:bg-green-600 transition-all duration-300 px-3 py-1 rounded-md text-sm">
+                                Send Password
+                            </button>
+                            <button
+                                class="bg-red-500 hover:bg-red-600 transition-all duration-300 px-3 py-1 rounded-md text-sm">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="userModal"
+    class="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center hidden z-50 text-white">
+    <div class="bg-[#181818] p-6 rounded-xl w-full max-w-md relative">
+        <h2 class="text-xl font-semibold mb-4">Create New User</h2>
+
+        <button id="closeModalBtn"
+            class="absolute top-3 right-3 text-white hover:text-red-500 text-lg font-bold">&times;</button>
+
+        <form id="createUserForm" class="flex flex-col gap-4">
+
+            <!-- Name -->
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium" for="username">Name</label>
+                <input type="text" id="username" name="username" placeholder="Axel Blaze" required
+                    class="w-full p-2 rounded-md border border-zinc-700 bg-[#141414] focus:ring-2 focus:ring-violet-500 outline-none text-sm" />
+            </div>
+
+            <!-- Email -->
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium" for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="axel12@gmail.com" required
+                    class="w-full p-2 rounded-md border border-zinc-700 bg-[#141414] focus:ring-2 focus:ring-violet-500 outline-none text-sm" />
+            </div>
+
+            <!-- Role -->
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium" for="role">Role</label>
+                <select id="role" name="role" required
+                    class="w-full p-2 rounded-md border border-zinc-700 bg-[#141414] focus:ring-2 focus:ring-violet-500 text-sm outline-none">
+                    <option value="" disabled selected>Select Role</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Employee">Employee</option>
+                </select>
+            </div>
+
+            <!-- Manager Selection -->
+            <div class="flex flex-col gap-2" id="managerSelectContainer" style="display: none;">
+                <label class="text-sm font-medium" for="manager_id">Assign Manager</label>
+                <select id="manager_id" name="manager_id"
+                    class="w-full p-2 rounded-md border border-zinc-700 bg-[#141414] focus:ring-2 focus:ring-violet-500 text-sm outline-none">
+                    <option value="" disabled selected>Select Manager</option>
+                    <option value="1">Alice Johnson</option>
+                    <option value="2">Bob Smith</option>
+                </select>
+            </div>
+
+            <button type="submit"
+                class="bg-violet-500 hover:bg-violet-600 transition-all duration-300 text-white font-semibold p-2 rounded-md w-full">
+                Create User
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Modal JS
+    const openModalBtn = document.getElementById('openModalBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const userModal = document.getElementById('userModal');
+
+    openModalBtn.addEventListener('click', () => {
+        userModal.classList.remove('hidden');
+    });
+
+    closeModalBtn.addEventListener('click', () => {
+        userModal.classList.add('hidden');
+    });
+
+    window.addEventListener('click', (e) => {
+        if (e.target === userModal) userModal.classList.add('hidden');
+    });
+
+    // Show manager dropdown only for Employees
+    const roleSelect = document.getElementById('role');
+    const managerContainer = document.getElementById('managerSelectContainer');
+
+    roleSelect.addEventListener('change', () => {
+        if (roleSelect.value === 'Employee') {
+            managerContainer.style.display = 'flex';
+        } else {
+            managerContainer.style.display = 'none';
+        }
+    });
+</script>
+
+{% endblock %}
