@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="w-full min-h-screen bg-gradient-to-br from-gray-900 via-black to-purple-900 text-white px-4 py-8">
+    <div class="max-w-5xl mx-auto">
+
+        <h1 class="text-3xl font-bold mb-6">Approval Rules</h1>
+
+        <div class="bg-[#181818] shadow-2xl rounded-xl p-6">
+            <form id="approvalRulesForm" class="flex flex-col gap-5">
+
+                <!-- User -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-sm font-medium">User</label>
+                    <input type="text" name="user" placeholder="Marc"
+                        class="w-full p-2 rounded-md border border-zinc-700 bg-[#141414] focus:ring-2 focus:ring-violet-500 outline-none text-sm" />
+                </div>
+
+                <!-- Description -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-sm font-medium">Description about rules</label>
+                    <textarea name="description" placeholder="Approval rule for miscellaneous expenses"
+                        class="w-full p-2 rounded-md border border-zinc-700 bg-[#141414] focus:ring-2 focus:ring-violet-500 outline-none text-sm"
+                        rows="2"></textarea>
+                </div>
+
+                <!-- Manager -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-sm font-medium">Manager</label>
+                    <select name="manager"
+                        class="w-full p-2 rounded-md border border-zinc-700 bg-[#141414] focus:ring-2 focus:ring-violet-500 text-sm outline-none">
+                        <option value="" disabled selected>Select Manager</option>
+                        <option value="sarah">Sarah</option>
+                        <option value="alice">Alice</option>
+                        <option value="bob">Bob</option>
+                    </select>
+                </div>
+
+                <!-- Approvers Table -->
+                <div class="mt-4">
+                    <h2 class="font-semibold mb-2">Approvers</h2>
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-zinc-700">
+                                <th class="p-2">User</th>
+                                <th class="p-2">Required</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-zinc-700">
+                                <td class="p-2">John</td>
+                                <td class="p-2">
+                                    <input type="checkbox" name="approver_john" class="w-4 h-4" checked />
+                                </td>
+                            </tr>
+                            <tr class="border-b border-zinc-700">
+                                <td class="p-2">Mitchell</td>
+                                <td class="p-2">
+                                    <input type="checkbox" name="approver_mitchell" class="w-4 h-4" />
+                                </td>
+                            </tr>
+                            <tr class="border-b border-zinc-700">
+                                <td class="p-2">Andreas</td>
+                                <td class="p-2">
+                                    <input type="checkbox" name="approver_andreas" class="w-4 h-4" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Manager Approver Sequence -->
+                <div class="flex items-center gap-2 mt-4">
+                    <input type="checkbox" name="approver_sequence" id="approverSequence" class="w-4 h-4">
+                    <label for="approverSequence" class="text-sm">Approvers Sequence</label>
+                </div>
+                <p class="text-xs text-zinc-400">
+                    If this field is ticked, then the sequence of approvers matters. If not ticked, requests are sent to
+                    all approvers simultaneously.
+                </p>
+
+                <!-- Minimum Approval Percentage -->
+                <div class="flex flex-col gap-2 mt-4">
+                    <label class="text-sm font-medium">Minimum Approval Percentage</label>
+                    <input type="number" name="min_approval_percentage" placeholder="70"
+                        class="w-full p-2 rounded-md border border-zinc-700 bg-[#141414] focus:ring-2 focus:ring-violet-500 outline-none text-sm" />
+                    <p class="text-xs text-zinc-400">
+                        Specify the percentage of approvers required to approve the request.
+                    </p>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit"
+                    class="bg-violet-500 hover:bg-violet-600 transition-all duration-300 text-white font-semibold p-2 rounded-md w-full mt-4">
+                    Save Approval Rule
+                </button>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

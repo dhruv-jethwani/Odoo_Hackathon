@@ -48,7 +48,7 @@ def admin_approval_rules():
             rules = [r.to_dict() for r in approvals.list_rules()]
         except Exception:
             rules = []
-        return render_template('dashboard.html', rules=rules, current_user_name='Admin')
+        return render_template('admin_approve.html', rules=rules, current_user_name='Admin')
     except Exception as e:
         print(f"Error fetching approval rules: {e}")
         return "Error", 500
@@ -64,7 +64,7 @@ def admin_expenses():
             items = [a.to_dict() for a in approvals.list_approvals(limit=500)]
         except Exception:
             items = []
-        return render_template('dashboard.html', expenses=items, current_user_name='Admin')
+        return render_template('admin_expense.html', expenses=items, current_user_name='Admin')
     except Exception as e:
         print(f"Error fetching expenses: {e}")
         return "Error", 500
