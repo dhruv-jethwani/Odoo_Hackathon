@@ -10,6 +10,9 @@ class User(db.Model):
     username = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(200), nullable=False)  # store hashed password
     session_token = db.Column(db.String(64), nullable=True)
+    # Role: Employee or Manager
+    role = db.Column(db.String(20), nullable=False, default='Employee')
+    manager_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
 
     def __repr__(self):
         return f"<User {self.username}>"
@@ -21,6 +24,15 @@ class User(db.Model):
 def create_user(user: User) -> None:
     db.session.add(user)
     db.session.commit()
+
+
+def create_user_record(email: str, username: str, password_hash: str, role: str = 'Employee', manager_id: int = None) -> User:
+    if role not in ('Employee', 'Manager'):
+        raise ValueError('role must be Employee or Manager')
+    user = User(email=email, username=username, password=password_hash, role=role, manager_id=manager_id)
+    db.session.add(user)
+    db.session.commit()
+    return user
 
 def verify_password(email: str, password: str) -> bool:
     user = User.query.filter_by(email=email).first()

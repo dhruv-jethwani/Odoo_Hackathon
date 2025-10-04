@@ -29,7 +29,14 @@ def admin_users():
         q = request.args.get('q', default=None, type=str)
         # limit parameter optional
         limit = request.args.get('limit', default=100, type=int)
-        users_list = users.get_users(search=q, limit=limit)
+        user_objs = users.get_users(search=q, limit=limit)
+        users_list = []
+        for u in user_objs:
+            manager_name = None
+            if getattr(u, 'manager_id', None):
+                mgr = users.User.query.get(u.manager_id)
+                manager_name = mgr.username if mgr else None
+            users_list.append({'id': u.id, 'username': u.username, 'email': u.email, 'role': u.role, 'manager': manager_name})
         # Render dashboard.html (available) and provide users in context for the template to use
         return render_template('dashboard.html', users=users_list, current_user_name='Admin')
     except Exception as e:
@@ -148,4 +155,29 @@ def admin_delete_user(uid: int):
         return redirect(url_for('admin.admin_users'))
     except Exception as e:
         print(f"Error deleting user: {e}")
+        return "Error", 500
+
+
+
+@admin_bp.route('/admin/users/create', methods=['POST'])
+def admin_create_user():
+    try:
+        form = request.form
+        username = form.get('username')
+        email = form.get('email')
+        password = form.get('password')
+        role = form.get('role', 'Employee')
+        manager_id = form.get('manager_id')
+        if role not in ('Employee', 'Manager'):
+            return "Invalid role", 400
+        # prevent creating admin via this endpoint
+        if role == 'Admin':
+            return "Cannot create Admin via this endpoint", 403
+        from werkzeug.security import generate_password_hash
+        password_hash = generate_password_hash(password)
+        mgr_id = int(manager_id) if manager_id else None
+        users.create_user_record(email=email, username=username, password_hash=password_hash, role=role, manager_id=mgr_id)
+        return redirect(url_for('admin.admin_users'))
+    except Exception as e:
+        print(f"Error creating user: {e}")
         return "Error", 500

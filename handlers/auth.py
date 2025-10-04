@@ -1,6 +1,7 @@
 from . import auth_bp
 from flask import request, render_template, redirect, url_for, make_response
 from db import users
+from db import admins as admins
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import redirect
 
@@ -26,14 +27,8 @@ def register():
     # Hash password
     hashed_password = generate_password_hash(password)
 
-    # Create user object
-    user_obj = users.User(
-        email=email,
-        username=username,
-        password=hashed_password
-    )
-
-    users.create_user(user_obj)
+    # Create an Admin account on registration
+    admins.create_admin(name=username, email=email, password=password)
 
     # Redirect to login after successful register
     return redirect(url_for("auth.login"))
@@ -52,17 +47,29 @@ def login():
     if not email or not password:
         return render_template("login.html", error_msg="⚠️ All fields are required", hide_navbar=True)
 
-    # Get user from DB
+    # First, check if this is an admin
+    admin = admins.get_admin_by_email(email)
+    if admin and admin.check_password(password):
+        # update admin session token
+        admins.update_admin_session_token(email)
+        res = make_response(redirect(url_for('dashboard')))
+        return res
+
+    # Not an admin — check users table
     user = users.get_user_by_email(email)
     if not user or not check_password_hash(user.password, password):
         return render_template("login.html", error_msg="❌ Invalid credentials", hide_navbar=True)
 
-    # Update session token (only needs email, not password)
+    # Update user session token
     users.update_session_token(email)
 
-    # Redirect to dashboard/home
-    res = make_response(redirect(url_for("dashboard")))
-    return res
+    # Redirect depending on role
+    role = getattr(user, 'role', 'Employee')
+    if role == 'Manager':
+        return redirect(url_for('manager.manager_dashboard'))
+    else:
+        # Employee
+        return redirect(url_for('employee.employee_dashboard', email=email))
 
 
 

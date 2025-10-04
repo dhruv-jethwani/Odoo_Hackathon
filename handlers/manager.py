@@ -37,3 +37,10 @@ def manager_api_decide_approval(aid: int):
 	if not a:
 		return jsonify({'ok': False, 'error': 'approval not found'}), 404
 	return jsonify({'ok': True, 'approval': a.to_dict()})
+
+
+
+@manager_bp.route('/manager/dashboard')
+def manager_dashboard():
+	# Render dashboard but mark role as Manager; front-end can adapt
+	return render_template('manager_dashboard.html', current_user_name='Manager', current_user_role='Manager')

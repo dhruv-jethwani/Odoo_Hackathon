@@ -35,3 +35,14 @@ def employee_api_list_approvals():
 	return jsonify({'ok': True, 'approvals': [i.to_dict() for i in items]})
 
 
+
+@employee_bp.route('/employee/dashboard')
+def employee_dashboard():
+	# show employee view; accept email query param for now
+	email = request.args.get('email')
+	approvals_list = []
+	if email:
+		approvals_list = approvals.list_approvals_by_requestor(email=email)
+	return render_template('emp_view_expense.html', approvals=approvals_list, current_user_name=email or 'Employee')
+
+
