@@ -39,3 +39,25 @@ def update_session_token(email: str) -> None:
 
 def get_user_by_email(email: str) -> User:
     return User.query.filter_by(email=email).first()
+
+
+def get_users(search: str = None, limit: int = 100):
+    """Return a list of users. If `search` is provided, filter by email or username (case-insensitive).
+
+    Args:
+        search: optional search string to match against email or username
+        limit: max number of results to return
+
+    Returns:
+        List[User]
+    """
+    query = User.query
+    if search:
+        like = f"%{search}%"
+        # Use ilike for case-insensitive search when supported
+        try:
+            query = query.filter((User.email.ilike(like)) | (User.username.ilike(like)))
+        except Exception:
+            # Fallback to case-sensitive contains if ilike not supported
+            query = query.filter((User.email.contains(search)) | (User.username.contains(search)))
+    return query.limit(limit).all()

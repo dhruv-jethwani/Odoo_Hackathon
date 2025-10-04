@@ -63,8 +63,3 @@ def login():
     res = make_response(redirect(url_for("dashboard")))
     return res
 
-
-# 🟢 Example Home/Dashboard Route
-@auth_bp.route("/dashboard", methods=["GET"])
-def dashboard():
-    return render_template("dashboard.html")
