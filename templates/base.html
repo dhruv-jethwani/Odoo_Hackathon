@@ -29,16 +29,11 @@
         <li><a href="/admin/expenses" class="hover:text-violet-500 transition-colors text-sm">Expenses</a></li>
         {% elif current_user_role == 'Manager' %}
         <li><a href="/manager/dashboard" class="hover:text-violet-500 transition-colors text-sm">Dashboard</a></li>
-        <li><a href="/manager/api/approvals" class="hover:text-violet-500 transition-colors text-sm">Approvals
-            (API)</a></li>
-        <li><a href="/admin/expenses" class="hover:text-violet-500 transition-colors text-sm">Expenses</a></li>
         {% elif current_user_role == 'Employee' %}
         <li><a href="/employee/dashboard" class="hover:text-violet-500 transition-colors text-sm">My
             Expenses</a></li>
         <li><a href="/employee/api/approvals" class="hover:text-violet-500 transition-colors text-sm">Submit
             Expense</a></li>
-        <li><a href="/admin/approval-rules" class="hover:text-violet-500 transition-colors text-sm">Approval
-            Rules</a></li>
         {% else %}
         <li><a href="/dashboard" class="hover:text-violet-500 transition-colors text-sm">Dashboard</a></li>
         <li><a href="/login" class="hover:text-violet-500 transition-colors text-sm">Login</a></li>

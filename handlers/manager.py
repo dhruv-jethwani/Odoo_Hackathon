@@ -1,9 +1,8 @@
 from . import manager_bp
-from flask import request, render_template, redirect, url_for, make_response, jsonify
+from flask import request, render_template, redirect, url_for, jsonify, g
 from db import users
 from db import approvals as approvals
 from handlers.auth_utils import require_role
-from werkzeug.security import generate_password_hash, check_password_hash
 
 
 @manager_bp.route('/manager/api/approvals', methods=['GET'])
@@ -54,11 +53,19 @@ def manager_api_decide_approval(aid: int):
 def manager_dashboard():
 	# Render dashboard but mark role as Manager; front-end can adapt
 	username = request.args.get('username')
-	# show pending approvals for this manager (or all pending if no specific manager email provided)
-	manager_email = request.args.get('email')
+	# Determine current manager's email and user id from the request context (g)
+	manager_email = getattr(g, 'current_user_email', None)
+	approvals_list = []
 	if manager_email:
-		approvals_list = approvals.list_approvals_by_approver(email=manager_email)
+		# find all employees who have this manager
+		mgr_user = users.User.query.filter_by(email=manager_email).first()
+		if mgr_user:
+			employees = users.User.query.filter_by(manager_id=mgr_user.id).all()
+			emails = [e.email for e in employees]
+			# include approvals from those employees
+			approvals_list = approvals.list_approvals_by_requestors(emails=emails)
 	else:
+		# fallback: show global pending approvals
 		approvals_list = approvals.list_approvals(status='Pending')
 
 	# convert to dicts and add requestor_username for display
@@ -74,8 +81,10 @@ def manager_dashboard():
 
 
 @manager_bp.route('/manager/expenses/<int:aid>/approve', methods=['POST'])
+@require_role('Manager')
 def manager_approve(aid: int):
-	approver_email = request.args.get('email') or request.form.get('approver_email')
+	# prefer the logged-in manager's email from `g` (set in main.before_request)
+	approver_email = request.form.get('approver_email') or request.args.get('email') or getattr(g, 'current_user_email', None)
 	if not approver_email:
 		return "Approver email required", 400
 	a = approvals.set_approval_status(aid, approver_email=approver_email, status='Approved', comments=request.form.get('comments'))
@@ -85,8 +94,9 @@ def manager_approve(aid: int):
 
 
 @manager_bp.route('/manager/expenses/<int:aid>/reject', methods=['POST'])
+@require_role('Manager')
 def manager_reject(aid: int):
-	approver_email = request.args.get('email') or request.form.get('approver_email')
+	approver_email = request.form.get('approver_email') or request.args.get('email') or getattr(g, 'current_user_email', None)
 	if not approver_email:
 		return "Approver email required", 400
 	a = approvals.set_approval_status(aid, approver_email=approver_email, status='Rejected', comments=request.form.get('comments'))
@@ -95,13 +105,4 @@ def manager_reject(aid: int):
 	return redirect(url_for('manager.manager_dashboard', email=approver_email))
 
 
-@manager_bp.route('/manager/expenses/<int:aid>/escalate', methods=['POST'])
-def manager_escalate(aid: int):
-	approver_email = request.args.get('email') or request.form.get('approver_email')
-	if not approver_email:
-		return "Approver email required", 400
-	# For escalate we mark status as PendingEscalation or similar; here we use 'Escalated'
-	a = approvals.set_approval_status(aid, approver_email=approver_email, status='Escalated', comments=request.form.get('comments'))
-	if not a:
-		return "Not found", 404
-	return redirect(url_for('manager.manager_dashboard', email=approver_email))
+# escalate removed per requirements: managers can only approve or reject

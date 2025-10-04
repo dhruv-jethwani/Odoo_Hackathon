@@ -40,7 +40,7 @@
                         {% for expense in approvals %}
                         <tr class="border-b border-zinc-700">
                             <td class="p-2">{{ expense.id }}</td>
-                            <td class="p-2">{{ expense.requestor_email }}</td>
+                            <td class="p-2">{{ expense.requestor_username }}</td>
                             <td class="p-2">{{ expense.description or '-' }}</td>
                             <td class="p-2">₹{{ expense.amount or 0 }}</td>
                             <td class="p-2">{{ expense.created_at[:10] if expense.created_at else '-' }}</td>
@@ -58,16 +58,14 @@
                             <td class="p-2 flex gap-2">
                                 {% if expense.status == 'Pending' %}
                                 <form method="post" action="/manager/expenses/{{ expense.id }}/approve">
+                                    <input type="hidden" name="approver_email" value="{{ current_user_email or '' }}" />
                                     <button type="submit"
                                         class="bg-green-500 hover:bg-green-600 px-3 py-1 rounded-md text-sm">Approve</button>
                                 </form>
                                 <form method="post" action="/manager/expenses/{{ expense.id }}/reject">
+                                    <input type="hidden" name="approver_email" value="{{ current_user_email or '' }}" />
                                     <button type="submit"
                                         class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md text-sm">Reject</button>
-                                </form>
-                                <form method="post" action="/manager/expenses/{{ expense.id }}/escalate">
-                                    <button type="submit"
-                                        class="bg-purple-500 hover:bg-purple-600 px-3 py-1 rounded-md text-sm">Escalate</button>
                                 </form>
                                 {% else %}
                                 <span class="text-gray-400">No actions</span>

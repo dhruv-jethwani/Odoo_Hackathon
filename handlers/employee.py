@@ -38,7 +38,9 @@ def employee_dashboard():
 	email = request.args.get('email')
 	approvals_list = []
 	if email:
-		approvals_list = approvals.list_approvals_by_requestor(email=email)
+		items = approvals.list_approvals_by_requestor(email=email)
+		# convert to dicts for template
+		approvals_list = [a.to_dict() for a in items]
 	return render_template('emp_view_expense.html', approvals=approvals_list, current_user_name=username or 'Employee', current_user_role='Employee')
 
 

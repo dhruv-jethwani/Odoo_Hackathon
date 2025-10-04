@@ -82,6 +82,22 @@ def list_approvals_by_requestor(email: str, status: str = None, limit: int = 200
     return q.order_by(Approval.created_at.desc()).limit(limit).all()
 
 
+def list_approvals_by_requestors(emails: list, status: str = None, limit: int = 200):
+    """Return approvals for any of the given requestor emails.
+
+    Args:
+        emails: list of email strings
+        status: optional status filter
+        limit: max rows
+    """
+    if not emails:
+        return []
+    q = Approval.query.filter(Approval.requestor_email.in_(emails))
+    if status:
+        q = q.filter_by(status=status)
+    return q.order_by(Approval.created_at.desc()).limit(limit).all()
+
+
 def list_approvals_by_approver(email: str, status: str = None, limit: int = 200):
     q = Approval.query.filter_by(approver_email=email)
     if status:

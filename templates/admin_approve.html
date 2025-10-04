@@ -59,8 +59,24 @@
                                     </tr>
                                 {% endfor %}
                             {% else %}
-                                <tr>
-                                    <td colspan="2" class="p-4 text-center text-gray-600">No approvers/rules defined.</td>
+                                <!-- Show three dummy approver rows when no rules are defined -->
+                                <tr class="border-b border-zinc-700">
+                                    <td class="p-2">Alice Manager</td>
+                                    <td class="p-2">
+                                        <input type="checkbox" name="approvers[]" value="alice" class="w-4 h-4">
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-zinc-700">
+                                    <td class="p-2">Bob Manager</td>
+                                    <td class="p-2">
+                                        <input type="checkbox" name="approvers[]" value="bob" class="w-4 h-4">
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-zinc-700">
+                                    <td class="p-2">Charlie Manager</td>
+                                    <td class="p-2">
+                                        <input type="checkbox" name="approvers[]" value="charlie" class="w-4 h-4">
+                                    </td>
                                 </tr>
                             {% endif %}
                         </tbody>
