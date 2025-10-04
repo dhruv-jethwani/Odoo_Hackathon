@@ -73,6 +73,20 @@ def list_approvals(status: str = None, limit: int = 200):
     return q.order_by(Approval.created_at.desc()).limit(limit).all()
 
 
+def list_approvals_by_requestor(email: str, status: str = None, limit: int = 200):
+    q = Approval.query.filter_by(requestor_email=email)
+    if status:
+        q = q.filter_by(status=status)
+    return q.order_by(Approval.created_at.desc()).limit(limit).all()
+
+
+def list_approvals_by_approver(email: str, status: str = None, limit: int = 200):
+    q = Approval.query.filter_by(approver_email=email)
+    if status:
+        q = q.filter_by(status=status)
+    return q.order_by(Approval.created_at.desc()).limit(limit).all()
+
+
 def get_approval_by_id(aid: int):
     return Approval.query.get(aid)
 

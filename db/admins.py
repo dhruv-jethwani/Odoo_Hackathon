@@ -1,6 +1,6 @@
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
-import secrets
+from utils.tokens import generate_random_tokens
 
 class Admin(db.Model):
     __tablename__ = "admins"   # ✅ renamed from users → admins
@@ -28,7 +28,8 @@ class Admin(db.Model):
 
     def generate_session_token(self):
         """Generate a new session token"""
-        self.session_token = secrets.token_hex(16)
+        # Use project's token generator for consistency
+        self.session_token = generate_random_tokens(32)
         return self.session_token
 
 

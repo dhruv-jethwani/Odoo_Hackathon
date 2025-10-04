@@ -2,6 +2,7 @@ from . import auth_bp
 from flask import request, render_template, redirect, url_for, make_response
 from db import users
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import redirect
 
 # 🟢 Register Route
 @auth_bp.route("/", methods=["GET"])
@@ -62,4 +63,20 @@ def login():
     # Redirect to dashboard/home
     res = make_response(redirect(url_for("dashboard")))
     return res
+
+
+
+
+
+@auth_bp.route('/logout')
+def logout():
+    # Clear any session token for the current user if provided via query param (simple implementation)
+    email = request.args.get('email')
+    if email:
+        user = users.get_user_by_email(email)
+        if user:
+            user.session_token = None
+            from db import db as _db
+            _db.session.commit()
+    return redirect(url_for('auth.login'))
 

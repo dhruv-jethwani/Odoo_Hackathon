@@ -30,7 +30,41 @@ def admin_users():
         # limit parameter optional
         limit = request.args.get('limit', default=100, type=int)
         users_list = users.get_users(search=q, limit=limit)
-        return render_template('admin_users.html', users=users_list, query=q)
+        # Render dashboard.html (available) and provide users in context for the template to use
+        return render_template('dashboard.html', users=users_list, current_user_name='Admin')
     except Exception as e:
         print(f"Error fetching users: {e}")
         return "An error occurred while fetching users.", 500
+
+
+
+@admin_bp.route('/admin/approval-rules', methods=['GET'])
+def admin_approval_rules():
+    try:
+        rules = []
+        # If approvals module exists, try to fetch rules
+        try:
+            from db import approvals
+            rules = [r.to_dict() for r in approvals.list_rules()]
+        except Exception:
+            rules = []
+        return render_template('dashboard.html', rules=rules, current_user_name='Admin')
+    except Exception as e:
+        print(f"Error fetching approval rules: {e}")
+        return "Error", 500
+
+
+@admin_bp.route('/admin/expenses', methods=['GET'])
+def admin_expenses():
+    try:
+        # fetch all approvals/expenses
+        items = []
+        try:
+            from db import approvals
+            items = [a.to_dict() for a in approvals.list_approvals(limit=500)]
+        except Exception:
+            items = []
+        return render_template('dashboard.html', expenses=items, current_user_name='Admin')
+    except Exception as e:
+        print(f"Error fetching expenses: {e}")
+        return "Error", 500

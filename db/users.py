@@ -1,6 +1,6 @@
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
-import secrets
+from utils.tokens import generate_random_tokens
 
 class User(db.Model):
     __tablename__ = "users"
@@ -34,7 +34,7 @@ def is_email_already_taken(email: str) -> bool:
 def update_session_token(email: str) -> None:
     user = User.query.filter_by(email=email).first()
     if user:
-        user.session_token = secrets.token_hex(16)  # generate random session token
+        user.session_token = generate_random_tokens(32)
         db.session.commit()
 
 def get_user_by_email(email: str) -> User:
