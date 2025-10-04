@@ -53,7 +53,7 @@ def login():
         # update admin session token
         admins.update_admin_session_token(email)
         # Redirect admins to the admin users view which provides the users/managers context
-        return redirect(url_for('admin.admin_users'))
+        return redirect(url_for('admin.admin_users', username=admin.name))
 
     # Not an admin — check users table
     user = users.get_user_by_email(email)
@@ -66,10 +66,10 @@ def login():
     # Redirect depending on role
     role = getattr(user, 'role', 'Employee')
     if role == 'Manager':
-        return redirect(url_for('manager.manager_dashboard'))
+        return redirect(url_for('manager.manager_dashboard', username=user.username, email=user.email))
     else:
         # Employee
-        return redirect(url_for('employee.employee_dashboard', email=email))
+        return redirect(url_for('employee.employee_dashboard', email=email, username=user.username))
 
 
 

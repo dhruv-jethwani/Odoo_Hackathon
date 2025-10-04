@@ -7,8 +7,6 @@ from flask import jsonify
 from db import approvals as approvals
 
 
-
-
 @employee_bp.route('/employee/api/approvals', methods=['POST'])
 def employee_api_create_approval():
 	data = request.get_json(force=True, silent=True) or {}
@@ -39,10 +37,11 @@ def employee_api_list_approvals():
 @employee_bp.route('/employee/dashboard')
 def employee_dashboard():
 	# show employee view; accept email query param for now
+	username = request.args.get('username')
 	email = request.args.get('email')
 	approvals_list = []
 	if email:
 		approvals_list = approvals.list_approvals_by_requestor(email=email)
-	return render_template('emp_view_expense.html', approvals=approvals_list, current_user_name=email or 'Employee')
+	return render_template('emp_view_expense.html', approvals=approvals_list, current_user_name=username or 'Employee', current_user_role='Employee')
 
 

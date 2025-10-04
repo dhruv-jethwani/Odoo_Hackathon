@@ -5,8 +5,6 @@ from db import approvals as approvals
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-
-
 @manager_bp.route('/manager/api/approvals', methods=['GET'])
 def manager_api_list_approvals():
 	approver_email = request.args.get('approver_email')
@@ -43,4 +41,5 @@ def manager_api_decide_approval(aid: int):
 @manager_bp.route('/manager/dashboard')
 def manager_dashboard():
 	# Render dashboard but mark role as Manager; front-end can adapt
-	return render_template('manager_dashboard.html', current_user_name='Manager', current_user_role='Manager')
+	username = request.args.get('username')
+	return render_template('manager.html', current_user_name=username or 'Manager', current_user_role='Manager')

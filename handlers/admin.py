@@ -16,7 +16,7 @@ def admin_overview():
     """
     try:
         admin_objs = admins.Admin.query.order_by(admins.Admin.id.asc()).all()
-        return render_template('admin_overview.html', admins=admin_objs)
+        return render_template('admin_overview.html', admins=admin_objs, current_user_role='Admin')
     except Exception as e:
         print(f"Error fetching admins: {e}")
         return "An error occurred while fetching admin overview.", 500
@@ -41,7 +41,7 @@ def admin_users():
         # Also provide a list of managers for the "Create User" modal
         manager_objs = users.User.query.filter_by(role='Manager').all()
         managers = [{'id': m.id, 'username': m.username, 'email': m.email} for m in manager_objs]
-        return render_template('dashboard.html', users=users_list, current_user_name='Admin', managers=managers)
+        return render_template('dashboard.html', users=users_list, current_user_name='Admin', current_user_role='Admin', managers=managers)
     except Exception as e:
         print(f"Error fetching users: {e}")
         return "An error occurred while fetching users.", 500
@@ -58,7 +58,7 @@ def admin_approval_rules():
             rules = [r.to_dict() for r in approvals.list_rules()]
         except Exception:
             rules = []
-        return render_template('admin_approve.html', rules=rules, current_user_name='Admin')
+        return render_template('admin_approve.html', rules=rules, current_user_name='Admin', current_user_role='Admin')
     except Exception as e:
         print(f"Error fetching approval rules: {e}")
         return "Error", 500
@@ -74,7 +74,7 @@ def admin_expenses():
             items = [a.to_dict() for a in approvals.list_approvals(limit=500)]
         except Exception:
             items = []
-        return render_template('admin_expense.html', expenses=items, current_user_name='Admin')
+        return render_template('admin_expense.html', expenses=items, current_user_name='Admin', current_user_role='Admin')
     except Exception as e:
         print(f"Error fetching expenses: {e}")
         return "Error", 500
