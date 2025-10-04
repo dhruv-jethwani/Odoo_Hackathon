@@ -7,16 +7,8 @@
 
         <!-- Logo + Heading -->
         <div class="flex flex-col justify-center items-center gap-3">
-            <div class="p-3 bg-[#1E1E1E] w-fit rounded-xl shadow-lg">
-                <!-- Cloud Upload Icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-violet-500" fill="none"
-                    viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12" />
-                </svg>
-            </div>
             <div class="flex flex-col items-center justify-center">
-                <h1 class="font-bold text-3xl">Cimbus Drive</h1>
+                <h1 class="font-bold text-3xl">Expense Management</h1>
                 <h2 class="font-medium text-lg text-zinc-300">Welcome Back</h2>
             </div>
         </div>
@@ -25,7 +17,7 @@
         <div class="w-full py-6 px-6 mt-6 flex flex-col items-start justify-start rounded-xl bg-[#181818] shadow-2xl">
             <div class="flex flex-col gap-2">
                 <h1 class="font-semibold text-lg">Sign In</h1>
-                <p class="text-sm text-zinc-400">Enter your email and password to access your files</p>
+                <p class="text-sm text-zinc-400">Enter your email and password to start</p>
             </div>
 
             <form method="POST" action="/login" class="mt-5 flex flex-col gap-5 w-full">
@@ -47,6 +39,8 @@
                         class="w-full p-2 outline-none border rounded-md border-zinc-700 bg-[#141414] focus:ring-2 focus:ring-violet-500 text-sm"
                         type="password" id="password" name="password" placeholder="******" required />
                 </div>
+
+                <a href="#" class="text-sm font-medium text-violet-500 hover:text-violet-600">Forget Password ?</a>
 
                 <!-- Button -->
                 <button type="submit"
