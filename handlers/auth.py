@@ -52,8 +52,8 @@ def login():
     if admin and admin.check_password(password):
         # update admin session token
         admins.update_admin_session_token(email)
-        res = make_response(redirect(url_for('dashboard')))
-        return res
+        # Redirect admins to the admin users view which provides the users/managers context
+        return redirect(url_for('admin.admin_users'))
 
     # Not an admin — check users table
     user = users.get_user_by_email(email)
