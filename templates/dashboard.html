@@ -52,10 +52,11 @@
                     {% endfor %}
                     {% else %}
                     <tr>
-                        <td colspan="6" class="p-4 text-center text-gray-600">No users to display.</td>
+                        <td colspan="6" class="p-4 text-center text-gray-400">No users to display.</td>
                     </tr>
                     {% endif %}
                 </tbody>
+
             </table>
         </div>
     </div>
@@ -104,11 +105,11 @@
                     class="w-full p-2 rounded-md border border-zinc-700 bg-[#141414] focus:ring-2 focus:ring-violet-500 text-sm outline-none">
                     <option value="" disabled selected>Select Manager</option>
                     {% if managers %}
-                        {% for m in managers %}
-                            <option value="{{ m.id }}">{{ m.username }} &lt;{{ m.email }}&gt;</option>
-                        {% endfor %}
+                    {% for m in managers %}
+                    <option value="{{ m.id }}">{{ m.username }} &lt;{{ m.email }}&gt;</option>
+                    {% endfor %}
                     {% else %}
-                        <option value="">No managers available</option>
+                    <option value="">No managers available</option>
                     {% endif %}
                 </select>
             </div>
