@@ -103,8 +103,13 @@
                 <select id="manager_id" name="manager_id"
                     class="w-full p-2 rounded-md border border-zinc-700 bg-[#141414] focus:ring-2 focus:ring-violet-500 text-sm outline-none">
                     <option value="" disabled selected>Select Manager</option>
-                    <option value="1">Alice Johnson</option>
-                    <option value="2">Bob Smith</option>
+                    {% if managers %}
+                        {% for m in managers %}
+                            <option value="{{ m.id }}">{{ m.username }} &lt;{{ m.email }}&gt;</option>
+                        {% endfor %}
+                    {% else %}
+                        <option value="">No managers available</option>
+                    {% endif %}
                 </select>
             </div>
 
