@@ -104,7 +104,7 @@ def manager_dashboard():
 
 
 
-@manager_bp.route('/manager/expenses/<int:aid>/approve', methods=['POST'])
+@manager_bp.route('/manager/approvals/<int:aid>/approve', methods=['POST'])
 @require_role('Manager')
 def manager_approve(aid: int):
 	# prefer the logged-in manager's email from `g` (set in main.before_request)
@@ -117,7 +117,7 @@ def manager_approve(aid: int):
 	return redirect(url_for('manager.manager_dashboard', email=approver_email))
 
 
-@manager_bp.route('/manager/expenses/<int:aid>/reject', methods=['POST'])
+@manager_bp.route('/manager/approvals/<int:aid>/reject', methods=['POST'])
 @require_role('Manager')
 def manager_reject(aid: int):
 	approver_email = request.form.get('approver_email') or request.args.get('email') or getattr(g, 'current_user_email', None)
