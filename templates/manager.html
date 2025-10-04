@@ -36,56 +36,50 @@
                     </tr>
                 </thead>
                 <tbody id="expenseTableBody">
-                    {% set dummy_expenses = [
-                    {'id': 1, 'employee':'John Doe', 'description':'Travel to client site', 'amount':1500,
-                    'date':'2025-10-01', 'status':'pending'},
-                    {'id': 2, 'employee':'Jane Smith', 'description':'Team lunch', 'amount':1200, 'date':'2025-10-02',
-                    'status':'approved'},
-                    {'id': 3, 'employee':'Mike Lee', 'description':'Stationery purchase', 'amount':500,
-                    'date':'2025-10-03', 'status':'pending'},
-                    {'id': 4, 'employee':'Alice Brown', 'description':'Conference registration', 'amount':3000,
-                    'date':'2025-10-04', 'status':'escalated'}
-                    ] %}
-                    {% for expense in dummy_expenses %}
-                    <tr class="border-b border-zinc-700">
-                        <td class="p-2">{{ expense.id }}</td>
-                        <td class="p-2">{{ expense.employee }}</td>
-                        <td class="p-2">{{ expense.description }}</td>
-                        <td class="p-2">₹{{ expense.amount }}</td>
-                        <td class="p-2">{{ expense.date }}</td>
-                        <td class="p-2">
-                            {% if expense.status == 'approved' %}
-                            <span class="text-green-400 font-semibold">{{ expense.status|capitalize }}</span>
-                            {% elif expense.status == 'pending' %}
-                            <span class="text-yellow-400 font-semibold">{{ expense.status|capitalize }}</span>
-                            {% elif expense.status == 'rejected' %}
-                            <span class="text-red-500 font-semibold">{{ expense.status|capitalize }}</span>
-                            {% elif expense.status == 'escalated' %}
-                            <span class="text-purple-400 font-semibold">{{ expense.status|capitalize }}</span>
-                            {% else %}
-                            {{ expense.status }}
-                            {% endif %}
-                        </td>
-                        <td class="p-2 flex gap-2">
-                            {% if expense.status == 'pending' %}
-                            <form method="post" action="/manager/expenses/{{ expense.id }}/approve">
-                                <button type="submit"
-                                    class="bg-green-500 hover:bg-green-600 px-3 py-1 rounded-md text-sm">Approve</button>
-                            </form>
-                            <form method="post" action="/manager/expenses/{{ expense.id }}/reject">
-                                <button type="submit"
-                                    class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md text-sm">Reject</button>
-                            </form>
-                            <form method="post" action="/manager/expenses/{{ expense.id }}/escalate">
-                                <button type="submit"
-                                    class="bg-purple-500 hover:bg-purple-600 px-3 py-1 rounded-md text-sm">Escalate</button>
-                            </form>
-                            {% else %}
-                            <span class="text-gray-400">No actions</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
+                    {% if approvals %}
+                        {% for expense in approvals %}
+                        <tr class="border-b border-zinc-700">
+                            <td class="p-2">{{ expense.id }}</td>
+                            <td class="p-2">{{ expense.requestor_email }}</td>
+                            <td class="p-2">{{ expense.description or '-' }}</td>
+                            <td class="p-2">₹{{ expense.amount or 0 }}</td>
+                            <td class="p-2">{{ expense.created_at[:10] if expense.created_at else '-' }}</td>
+                            <td class="p-2">
+                                {% if expense.status == 'Approved' %}
+                                <span class="text-green-400 font-semibold">{{ expense.status }}</span>
+                                {% elif expense.status == 'Pending' %}
+                                <span class="text-yellow-400 font-semibold">{{ expense.status }}</span>
+                                {% elif expense.status == 'Rejected' %}
+                                <span class="text-red-500 font-semibold">{{ expense.status }}</span>
+                                {% else %}
+                                {{ expense.status }}
+                                {% endif %}
+                            </td>
+                            <td class="p-2 flex gap-2">
+                                {% if expense.status == 'Pending' %}
+                                <form method="post" action="/manager/expenses/{{ expense.id }}/approve">
+                                    <button type="submit"
+                                        class="bg-green-500 hover:bg-green-600 px-3 py-1 rounded-md text-sm">Approve</button>
+                                </form>
+                                <form method="post" action="/manager/expenses/{{ expense.id }}/reject">
+                                    <button type="submit"
+                                        class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md text-sm">Reject</button>
+                                </form>
+                                <form method="post" action="/manager/expenses/{{ expense.id }}/escalate">
+                                    <button type="submit"
+                                        class="bg-purple-500 hover:bg-purple-600 px-3 py-1 rounded-md text-sm">Escalate</button>
+                                </form>
+                                {% else %}
+                                <span class="text-gray-400">No actions</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="p-4 text-center text-gray-600">No expenses to display.</td>
+                        </tr>
+                    {% endif %}
                 </tbody>
             </table>
         </div>

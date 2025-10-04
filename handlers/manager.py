@@ -42,4 +42,10 @@ def manager_api_decide_approval(aid: int):
 def manager_dashboard():
 	# Render dashboard but mark role as Manager; front-end can adapt
 	username = request.args.get('username')
-	return render_template('manager.html', current_user_name=username or 'Manager', current_user_role='Manager')
+	# show pending approvals for this manager (or all pending if no specific manager email provided)
+	manager_email = request.args.get('email')
+	if manager_email:
+		approvals_list = approvals.list_approvals_by_approver(email=manager_email)
+	else:
+		approvals_list = approvals.list_approvals(status='Pending')
+	return render_template('manager.html', approvals=approvals_list, current_user_name=username or 'Manager', current_user_role='Manager')

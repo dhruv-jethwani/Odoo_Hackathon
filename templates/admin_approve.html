@@ -30,9 +30,13 @@
                     <select name="manager"
                         class="w-full p-2 rounded-md border border-zinc-700 bg-[#141414] focus:ring-2 focus:ring-violet-500 text-sm outline-none">
                         <option value="" disabled selected>Select Manager</option>
-                        <option value="sarah">Sarah</option>
-                        <option value="alice">Alice</option>
-                        <option value="bob">Bob</option>
+                        {% if managers %}
+                            {% for m in managers %}
+                                <option value="{{ m.email }}">{{ m.username }} &lt;{{ m.email }}&gt;</option>
+                            {% endfor %}
+                        {% else %}
+                            <option value="">No managers available</option>
+                        {% endif %}
                     </select>
                 </div>
 
@@ -47,24 +51,18 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="border-b border-zinc-700">
-                                <td class="p-2">John</td>
-                                <td class="p-2">
-                                    <input type="checkbox" name="approver_john" class="w-4 h-4" checked />
-                                </td>
-                            </tr>
-                            <tr class="border-b border-zinc-700">
-                                <td class="p-2">Mitchell</td>
-                                <td class="p-2">
-                                    <input type="checkbox" name="approver_mitchell" class="w-4 h-4" />
-                                </td>
-                            </tr>
-                            <tr class="border-b border-zinc-700">
-                                <td class="p-2">Andreas</td>
-                                <td class="p-2">
-                                    <input type="checkbox" name="approver_andreas" class="w-4 h-4" />
-                                </td>
-                            </tr>
+                            {% if rules %}
+                                {% for r in rules %}
+                                    <tr class="border-b border-zinc-700">
+                                        <td class="p-2">{{ r.name }}</td>
+                                        <td class="p-2">{{ r.required_approvers }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="2" class="p-4 text-center text-gray-600">No approvers/rules defined.</td>
+                                </tr>
+                            {% endif %}
                         </tbody>
                     </table>
                 </div>

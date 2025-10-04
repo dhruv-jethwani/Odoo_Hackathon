@@ -57,7 +57,10 @@ def admin_approval_rules():
             rules = [r.to_dict() for r in approvals.list_rules()]
         except Exception:
             rules = []
-        return render_template('admin_approve.html', rules=rules, current_user_name='Admin', current_user_role='Admin')
+        # provide managers list for the manager select in the form
+        manager_objs = users.User.query.filter_by(role='Manager').all()
+        managers = [{'id': m.id, 'username': m.username, 'email': m.email} for m in manager_objs]
+        return render_template('admin_approve.html', rules=rules, managers=managers, current_user_name='Admin', current_user_role='Admin')
     except Exception as e:
         print(f"Error fetching approval rules: {e}")
         return "Error", 500
