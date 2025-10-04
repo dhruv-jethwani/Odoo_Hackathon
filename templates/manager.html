@@ -21,7 +21,7 @@
             </select>
         </div>
 
-        <!-- Team Expenses Table -->
+        <!-- Team Approvals Table -->
         <div class="bg-[#181818] shadow-2xl rounded-xl p-4 overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
@@ -29,7 +29,7 @@
                         <th class="p-2">ID</th>
                         <th class="p-2">Employee</th>
                         <th class="p-2">Description</th>
-                        <th class="p-2">Amount (₹)</th>
+                        <th class="p-2">Amount</th>
                         <th class="p-2">Date</th>
                         <th class="p-2">Status</th>
                         <th class="p-2">Actions</th>
@@ -37,32 +37,39 @@
                 </thead>
                 <tbody id="expenseTableBody">
                     {% if approvals %}
-                        {% for expense in approvals %}
+                        {% for approval in approvals %}
                         <tr class="border-b border-zinc-700">
-                            <td class="p-2">{{ expense.id }}</td>
-                            <td class="p-2">{{ expense.requestor_username }}</td>
-                            <td class="p-2">{{ expense.description or '-' }}</td>
-                            <td class="p-2">₹{{ expense.amount or 0 }}</td>
-                            <td class="p-2">{{ expense.created_at[:10] if expense.created_at else '-' }}</td>
+                            <td class="p-2">{{ approval.id }}</td>
+                            <td class="p-2">{{ approval.requestor_username }}</td>
+                            <td class="p-2">{{ approval.description or '-' }}</td>
                             <td class="p-2">
-                                {% if expense.status == 'Approved' %}
-                                <span class="text-green-400 font-semibold">{{ expense.status }}</span>
-                                {% elif expense.status == 'Pending' %}
-                                <span class="text-yellow-400 font-semibold">{{ expense.status }}</span>
-                                {% elif expense.status == 'Rejected' %}
-                                <span class="text-red-500 font-semibold">{{ expense.status }}</span>
+                                {% if approval.converted_amount %}
+                                    {{ approval.converted_amount|round(2) }} {{ approval.company_currency }}
+                                    <div class="text-xs text-zinc-400">Orig: {{ approval.amount }} {{ approval.currency or '' }}</div>
                                 {% else %}
-                                {{ expense.status }}
+                                    {{ approval.amount or 0 }} {{ approval.currency or '' }}
+                                {% endif %}
+                            </td>
+                            <td class="p-2">{{ approval.created_at[:10] if approval.created_at else '-' }}</td>
+                            <td class="p-2">
+                                {% if approval.status == 'Approved' %}
+                                <span class="text-green-400 font-semibold">{{ approval.status }}</span>
+                                {% elif approval.status == 'Pending' %}
+                                <span class="text-yellow-400 font-semibold">{{ approval.status }}</span>
+                                {% elif approval.status == 'Rejected' %}
+                                <span class="text-red-500 font-semibold">{{ approval.status }}</span>
+                                {% else %}
+                                {{ approval.status }}
                                 {% endif %}
                             </td>
                             <td class="p-2 flex gap-2">
-                                {% if expense.status == 'Pending' %}
-                                <form method="post" action="/manager/expenses/{{ expense.id }}/approve">
+                                {% if approval.status == 'Pending' %}
+                                <form method="post" action="/manager/approvals/{{ approval.id }}/approve">
                                     <input type="hidden" name="approver_email" value="{{ current_user_email or '' }}" />
                                     <button type="submit"
                                         class="bg-green-500 hover:bg-green-600 px-3 py-1 rounded-md text-sm">Approve</button>
                                 </form>
-                                <form method="post" action="/manager/expenses/{{ expense.id }}/reject">
+                                <form method="post" action="/manager/approvals/{{ approval.id }}/reject">
                                     <input type="hidden" name="approver_email" value="{{ current_user_email or '' }}" />
                                     <button type="submit"
                                         class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md text-sm">Reject</button>
@@ -75,7 +82,7 @@
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="7" class="p-4 text-center text-gray-600">No expenses to display.</td>
+                            <td colspan="7" class="p-4 text-center text-gray-600">No approvals to display.</td>
                         </tr>
                     {% endif %}
                 </tbody>
