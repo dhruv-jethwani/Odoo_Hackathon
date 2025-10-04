@@ -46,8 +46,10 @@ def is_email_already_taken(email: str) -> bool:
 def update_session_token(email: str) -> None:
     user = User.query.filter_by(email=email).first()
     if user:
-        user.session_token = generate_random_tokens(32)
+        token = generate_random_tokens(32)
+        user.session_token = token
         db.session.commit()
+        return token
 
 def get_user_by_email(email: str) -> User:
     return User.query.filter_by(email=email).first()

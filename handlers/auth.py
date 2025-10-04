@@ -51,9 +51,12 @@ def login():
     admin = admins.get_admin_by_email(email)
     if admin and admin.check_password(password):
         # update admin session token
-        admins.update_admin_session_token(email)
+        token = admins.update_admin_session_token(email)
         # Redirect admins to the admin users view which provides the users/managers context
-        return redirect(url_for('admin.admin_users', username=admin.name))
+        res = make_response(redirect(url_for('admin.admin_users', username=admin.name)))
+        # set a cookie with the session token (simple, not HttpOnly for dev)
+        res.set_cookie('session_token', token, httponly=True)
+        return res
 
     # Not an admin — check users table
     user = users.get_user_by_email(email)
@@ -61,15 +64,19 @@ def login():
         return render_template("login.html", error_msg="❌ Invalid credentials", hide_navbar=True)
 
     # Update user session token
-    users.update_session_token(email)
+    token = users.update_session_token(email)
 
     # Redirect depending on role
     role = getattr(user, 'role', 'Employee')
     if role == 'Manager':
-        return redirect(url_for('manager.manager_dashboard', username=user.username, email=user.email))
+        res = make_response(redirect(url_for('manager.manager_dashboard', username=user.username, email=user.email)))
+        res.set_cookie('session_token', token, httponly=True)
+        return res
     else:
         # Employee
-        return redirect(url_for('employee.employee_dashboard', email=email, username=user.username))
+        res = make_response(redirect(url_for('employee.employee_dashboard', email=email, username=user.username)))
+        res.set_cookie('session_token', token, httponly=True)
+        return res
 
 
 
@@ -78,12 +85,24 @@ def login():
 @auth_bp.route('/logout')
 def logout():
     # Clear any session token for the current user if provided via query param (simple implementation)
-    email = request.args.get('email')
-    if email:
-        user = users.get_user_by_email(email)
-        if user:
-            user.session_token = None
+    # Clear server-side token for the logged-in user (if cookie present)
+    token = request.cookies.get('session_token')
+    if token:
+        # try to find a user with this token
+        u = users.User.query.filter_by(session_token=token).first()
+        if u:
+            u.session_token = None
             from db import db as _db
             _db.session.commit()
-    return redirect(url_for('auth.login'))
+        # also try admins
+        from db import admins as admins_mod
+        a = admins_mod.Admin.query.filter_by(session_token=token).first()
+        if a:
+            a.session_token = None
+            from db import db as _db
+            _db.session.commit()
+
+    res = make_response(redirect(url_for('auth.login')))
+    res.delete_cookie('session_token')
+    return res
 

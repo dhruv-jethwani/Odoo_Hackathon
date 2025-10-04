@@ -45,3 +45,35 @@ def employee_dashboard():
 	return render_template('emp_view_expense.html', approvals=approvals_list, current_user_name=username or 'Employee', current_user_role='Employee')
 
 
+
+@employee_bp.route('/employee/submit', methods=['POST'])
+def submit_expense():
+	"""Handle form-based expense submission from `emp_submit_expense.html`.
+
+	The form doesn't include an email field, so this handler accepts the
+	employee's email via either a query parameter `?email=...` on the form page
+	or via a hidden input named `email` in the submitted form. If no email is
+	provided the handler returns the submit form with an error message.
+	"""
+	username = request.args.get('username') or request.form.get('username')
+	email = request.args.get('email') or request.form.get('email')
+	if not email:
+		# render the submit form again with an error (so admin/dev can see the issue)
+		return render_template('emp_submit_expense.html', error_msg='Email is required to submit an expense.', current_user_name=username or 'Employee', current_user_role='Employee')
+
+	description = request.form.get('description')
+	amount = request.form.get('amount')
+	currency = request.form.get('currency') or 'USD'
+
+	# Convert amount where possible
+	try:
+		amount_val = float(amount) if amount else None
+	except Exception:
+		amount_val = None
+
+	a = approvals.create_approval(requestor_email=email, description=description, category=None, amount=amount_val, currency=currency)
+
+	# After creating the approval redirect to the employee dashboard
+	return redirect(url_for('employee.employee_dashboard', email=email, username=username))
+
+
