@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="w-full min-h-screen bg-gradient-to-br from-gray-900 via-black to-purple-900 text-white px-4 py-8">
+    <div class="max-w-6xl mx-auto">
+
+        <h1 class="text-3xl font-bold mb-6">All Expenses</h1>
+
+        <!-- Filters and Search -->
+        <div class="flex flex-col md:flex-row md:justify-between gap-4 mb-6">
+            <input type="text" id="searchInput" placeholder="Search by user or description"
+                class="p-2 rounded-md border border-zinc-700 bg-[#141414] focus:ring-2 focus:ring-violet-500 outline-none text-sm w-full md:w-1/2">
+            <select id="filterStatus"
+                class="p-2 rounded-md border border-zinc-700 bg-[#141414] focus:ring-2 focus:ring-violet-500 outline-none text-sm w-full md:w-1/4">
+                <option value="">All Status</option>
+                <option value="approved">Approved</option>
+                <option value="pending">Pending</option>
+                <option value="rejected">Rejected</option>
+            </select>
+        </div>
+
+        <!-- Expenses Table -->
+        <div class="bg-[#181818] shadow-2xl rounded-xl p-4 overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-zinc-700">
+                        <th class="p-2">ID</th>
+                        <th class="p-2">User</th>
+                        <th class="p-2">Description</th>
+                        <th class="p-2">Amount</th>
+                        <th class="p-2">Date</th>
+                        <th class="p-2">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="expenseTableBody">
+                    {% set expenses = [
+                    {'id':1, 'user':'John Doe', 'description':'Office Supplies', 'amount':120, 'date':'2025-10-01',
+                    'status':'approved'},
+                    {'id':2, 'user':'Jane Smith', 'description':'Team Lunch', 'amount':75, 'date':'2025-10-02',
+                    'status':'pending'},
+                    {'id':3, 'user':'Mike Johnson', 'description':'Travel Expenses', 'amount':200, 'date':'2025-10-03',
+                    'status':'rejected'},
+                    {'id':4, 'user':'Alice Brown', 'description':'Software Subscription', 'amount':50,
+                    'date':'2025-10-04', 'status':'approved'},
+                    {'id':5, 'user':'Bob Martin', 'description':'Client Meeting Expenses', 'amount':90,
+                    'date':'2025-10-05', 'status':'pending'}
+                    ] %}
+
+                    {% for expense in expenses %}
+                    <tr class="border-b border-zinc-700">
+                        <td class="p-2">{{ expense.id }}</td>
+                        <td class="p-2">{{ expense.user }}</td>
+                        <td class="p-2">{{ expense.description }}</td>
+                        <td class="p-2">${{ expense.amount }}</td>
+                        <td class="p-2">{{ expense.date }}</td>
+                        <td class="p-2">
+                            {% if expense.status == 'approved' %}
+                            <span class="text-green-400 font-semibold">{{ expense.status|capitalize }}</span>
+                            {% elif expense.status == 'pending' %}
+                            <span class="text-yellow-400 font-semibold">{{ expense.status|capitalize }}</span>
+                            {% elif expense.status == 'rejected' %}
+                            <span class="text-red-500 font-semibold">{{ expense.status|capitalize }}</span>
+                            {% else %}
+                            {{ expense.status }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const filterStatus = document.getElementById('filterStatus');
+    const tableBody = document.getElementById('expenseTableBody');
+
+    function filterExpenses() {
+        const searchValue = searchInput.value.toLowerCase();
+        const statusValue = filterStatus.value.toLowerCase();
+
+        for (let row of tableBody.rows) {
+            const user = row.cells[1].textContent.toLowerCase();
+            const description = row.cells[2].textContent.toLowerCase();
+            const status = row.cells[5].textContent.toLowerCase();
+
+            const matchesSearch = user.includes(searchValue) || description.includes(searchValue);
+            const matchesStatus = !statusValue || status === statusValue;
+
+            row.style.display = matchesSearch && matchesStatus ? '' : 'none';
+        }
+    }
+
+    searchInput.addEventListener('input', filterExpenses);
+    filterStatus.addEventListener('change', filterExpenses);
+</script>
+
+{% endblock %}

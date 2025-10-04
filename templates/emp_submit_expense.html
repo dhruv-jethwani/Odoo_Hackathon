@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="min-h-screen bg-gradient-to-br from-gray-900 via-black to-purple-900 text-white px-4 py-8">
+    <div class="max-w-3xl mx-auto bg-[#181818] rounded-xl shadow-2xl p-6">
+
+        <h1 class="text-3xl font-bold mb-6">Submit New Expense</h1>
+
+        <form method="POST" action="{{ url_for('employee.submit_expense') }}" class="flex flex-col gap-4">
+
+            <div class="flex flex-col gap-1">
+                <label class="text-sm font-medium">Description</label>
+                <input type="text" name="description" placeholder="Business lunch"
+                    class="p-2 rounded-md border border-zinc-700 bg-[#141414] focus:ring-2 focus:ring-violet-500 outline-none">
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-sm font-medium">Amount ($)</label>
+                <input type="number" name="amount" placeholder="50"
+                    class="p-2 rounded-md border border-zinc-700 bg-[#141414] focus:ring-2 focus:ring-violet-500 outline-none">
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-sm font-medium">Date</label>
+                <input type="date" name="date"
+                    class="p-2 rounded-md border border-zinc-700 bg-[#141414] focus:ring-2 focus:ring-violet-500 outline-none">
+            </div>
+
+            <button type="submit"
+                class="bg-violet-500 hover:bg-violet-600 transition-all duration-300 text-white font-semibold p-2 rounded-md mt-4">
+                Submit Expense
+            </button>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

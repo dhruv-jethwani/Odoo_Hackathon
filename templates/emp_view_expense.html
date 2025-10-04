@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="min-h-screen bg-gradient-to-br from-gray-900 via-black to-purple-900 text-white px-4 py-8">
+    <div class="max-w-5xl mx-auto">
+
+        <h1 class="text-3xl font-bold mb-6">My Expenses</h1>
+
+        <div class="bg-[#181818] shadow-2xl rounded-xl p-4 overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-zinc-700">
+                        <th class="p-2">ID</th>
+                        <th class="p-2">Description</th>
+                        <th class="p-2">Amount</th>
+                        <th class="p-2">Date</th>
+                        <th class="p-2">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set expenses = [
+                        {'id':1, 'description':'Office Supplies', 'amount':120, 'date':'2025-10-01', 'status':'approved'},
+                        {'id':2, 'description':'Team Lunch', 'amount':75, 'date':'2025-10-02', 'status':'pending'},
+                        {'id':3, 'description':'Travel Expenses', 'amount':200, 'date':'2025-10-03', 'status':'rejected'}
+                    ] %}
+                    {% for expense in expenses %}
+                    <tr class="border-b border-zinc-700">
+                        <td class="p-2">{{ expense.id }}</td>
+                        <td class="p-2">{{ expense.description }}</td>
+                        <td class="p-2">${{ expense.amount }}</td>
+                        <td class="p-2">{{ expense.date }}</td>
+                        <td class="p-2">
+                            {% if expense.status == 'approved' %}
+                                <span class="text-green-400 font-semibold">{{ expense.status|capitalize }}</span>
+                            {% elif expense.status == 'pending' %}
+                                <span class="text-yellow-400 font-semibold">{{ expense.status|capitalize }}</span>
+                            {% elif expense.status == 'rejected' %}
+                                <span class="text-red-500 font-semibold">{{ expense.status|capitalize }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
