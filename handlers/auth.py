@@ -5,6 +5,9 @@ from db import admins as admins
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import redirect
 from utils.currency import get_all_countries
+from utils.mailer import send_email
+from utils.tokens import generate_random_tokens
+from werkzeug.security import generate_password_hash
 
 # 🟢 Register Route
 @auth_bp.route("/", methods=["GET"])
@@ -107,4 +110,48 @@ def logout():
     res = make_response(redirect(url_for('auth.login')))
     res.delete_cookie('session_token')
     return res
+
+
+# Forgot password: request temporary password via email
+@auth_bp.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'GET':
+        return render_template('forgot_password.html', hide_navbar=True)
+
+    email = request.form.get('email', '').strip()
+    if not email:
+        return render_template('forgot_password.html', error_msg='Please enter your email', hide_navbar=True)
+
+    # Try admins first
+    try:
+        admin = admins.get_admin_by_email(email)
+        if admin:
+            temp_password = generate_random_tokens(10)
+            admin.set_password(temp_password)
+            from db import db as _db
+            _db.session.commit()
+            subject = 'Your temporary admin password'
+            body = f'Hello {admin.name},\n\nA temporary password has been generated for you:\n\n{temp_password}\n\nPlease login and change it immediately.'
+            send_email(admin.email, subject, body)
+            return render_template('forgot_password.html', success_msg='If an account exists, a temporary password was emailed.')
+    except Exception:
+        pass
+
+    # Try users
+    try:
+        user = users.get_user_by_email(email)
+        if user:
+            temp_password = generate_random_tokens(10)
+            user.password = generate_password_hash(temp_password)
+            from db import db as _db
+            _db.session.commit()
+            subject = 'Your temporary password'
+            body = f'Hello {user.username},\n\nA temporary password has been generated for you:\n\n{temp_password}\n\nPlease login and change it immediately.'
+            send_email(user.email, subject, body)
+            return render_template('forgot_password.html', success_msg='If an account exists, a temporary password was emailed.')
+    except Exception:
+        pass
+
+    # Generic response to avoid leaking user existence
+    return render_template('forgot_password.html', success_msg='If an account exists, a temporary password was emailed.')
 

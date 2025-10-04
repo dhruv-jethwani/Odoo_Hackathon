@@ -148,7 +148,24 @@ def admin_send_password(uid: int):
         user = users.User.query.get(uid)
         if not user:
             return "User not found", 404
-        # TODO: send password/email reset link. For now, just redirect back.
+        # Generate a temporary password and email it
+        from utils.tokens import generate_random_tokens
+        from utils.mailer import send_email
+        from werkzeug.security import generate_password_hash
+
+        temp_password = generate_random_tokens(10)
+        # store hashed password
+        user.password = generate_password_hash(temp_password)
+        from db import db as _db
+        _db.session.commit()
+
+        subject = "Your temporary password"
+        body = f"Hello {user.username},\n\nAn admin has reset your password. Your temporary password is:\n\n{temp_password}\n\nPlease login and change your password immediately using the 'Forgot Password' flow if needed.\n\nThanks."
+
+        sent = send_email(user.email, subject, body)
+        if not sent:
+            print("Email not sent; SMTP not configured or error occurred. Temporary password:", temp_password)
+
         return redirect(url_for('admin.admin_users'))
     except Exception as e:
         print(f"Error sending password: {e}")
