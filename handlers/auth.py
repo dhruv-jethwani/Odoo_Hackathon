@@ -4,13 +4,18 @@ from db import users
 from db import admins as admins
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import redirect
+from utils.currency import get_all_countries
 
 # 🟢 Register Route
 @auth_bp.route("/", methods=["GET"])
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "GET":
-        return render_template("register.html", hide_navbar=True)
+        try:
+            countries = get_all_countries()
+        except Exception:
+            countries = None
+        return render_template("register.html", hide_navbar=True, countries=countries)
 
     # Get form data
     username = request.form.get("username", "").strip()

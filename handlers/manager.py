@@ -3,6 +3,7 @@ from flask import request, render_template, redirect, url_for, jsonify, g
 from db import users
 from db import approvals as approvals
 from handlers.auth_utils import require_role
+from utils.currency import get_currency_for_country, convert_amount
 
 
 @manager_bp.route('/manager/api/approvals', methods=['GET'])
@@ -74,6 +75,29 @@ def manager_dashboard():
 		d = a.to_dict()
 		u = users.User.query.filter_by(email=d.get('requestor_email')).first()
 		d['requestor_username'] = u.username if u else d.get('requestor_email')
+		# convert amount to company currency (determine company currency from manager's admin record if possible)
+		company_currency = 'USD'
+		# try to infer company currency from manager user's manager (admin) or environment; fallback USD
+		# Here we check if there's an Admin record and use its country to derive currency
+		try:
+			from db import admins as admins_mod
+			admin_obj = admins_mod.Admin.query.first()
+			if admin_obj and admin_obj.country:
+				cc = get_currency_for_country(admin_obj.country)
+				if cc:
+					company_currency = cc
+		except Exception:
+			pass
+		# convert if approval has currency
+		orig_currency = d.get('currency') or ''
+		converted = None
+		if d.get('amount') is not None and orig_currency:
+			try:
+				converted = convert_amount(d.get('amount'), orig_currency, company_currency)
+			except Exception:
+				converted = None
+		d['converted_amount'] = converted
+		d['company_currency'] = company_currency
 		approvals_dicts.append(d)
 
 	return render_template('manager.html', approvals=approvals_dicts, current_user_name=username or 'Manager', current_user_role='Manager')
