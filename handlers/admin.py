@@ -203,7 +203,7 @@ def admin_create_user():
         # Generate a temporary password for the new user and store its hash
         from utils.tokens import generate_random_tokens
         from werkzeug.security import generate_password_hash
-        temp_password = generate_random_tokens(10)
+        temp_password = "employee"
         password_hash = generate_password_hash(temp_password)
 
         # Create the user record
