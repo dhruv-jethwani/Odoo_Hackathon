@@ -5,9 +5,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from flask import jsonify
 from db import approvals as approvals
+from handlers.auth_utils import require_role
 
 
 @employee_bp.route('/employee/api/approvals', methods=['POST'])
+@require_role('Employee')
 def employee_api_create_approval():
 	data = request.get_json(force=True, silent=True) or {}
 	requestor_email = data.get('requestor_email')
@@ -23,11 +25,13 @@ def employee_api_create_approval():
 
 
 @employee_bp.route('/employee/api/approvals', methods=['GET'])
+@require_role('Employee')
 def employee_api_list_approvals():
 	return render_template('emp_submit_expense.html', current_user_name='Employee', current_user_role='Employee')
 
 
 @employee_bp.route('/employee/dashboard')
+@require_role('Employee')
 def employee_dashboard():
 	# show employee view; accept email query param for now
 	username = request.args.get('username')
@@ -39,6 +43,7 @@ def employee_dashboard():
 
 
 @employee_bp.route('/employee/submit', methods=['POST'])
+@require_role('Employee')
 def submit_expense():
 	"""Handle form-based expense submission from `emp_submit_expense.html`.
 
@@ -57,13 +62,29 @@ def submit_expense():
 	amount = request.form.get('amount')
 	currency = request.form.get('currency') or 'USD'
 
+	# handle optional receipt upload
+	receipt = None
+	receipt_filename = None
+	if 'receipt' in request.files:
+		receipt = request.files.get('receipt')
+		if receipt and receipt.filename:
+			import os
+			uploads_dir = os.path.join(os.getcwd(), 'static', 'uploads')
+			os.makedirs(uploads_dir, exist_ok=True)
+			# sanitize filename lightly
+			from werkzeug.utils import secure_filename
+			fname = secure_filename(receipt.filename)
+			path = os.path.join(uploads_dir, fname)
+			receipt.save(path)
+			receipt_filename = fname
+
 	# Convert amount where possible
 	try:
 		amount_val = float(amount) if amount else None
 	except Exception:
 		amount_val = None
 
-	a = approvals.create_approval(requestor_email=email, description=description, category=None, amount=amount_val, currency=currency)
+	a = approvals.create_approval(requestor_email=email, description=description, category=None, amount=amount_val, currency=currency, receipt_filename=receipt_filename)
 
 	# After creating the approval redirect to the employee dashboard
 	return redirect(url_for('employee.employee_dashboard', email=email, username=username))

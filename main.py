@@ -38,11 +38,13 @@ def load_current_user():
     if admin:
         g.current_user_name = admin.name
         g.current_user_role = 'Admin'
+        g.current_user_email = admin.email
         return
     user = users_mod.User.query.filter_by(session_token=token).first()
     if user:
         g.current_user_name = user.username
         g.current_user_role = user.role or 'Employee'
+        g.current_user_email = user.email
 
 
 @app.context_processor
@@ -50,6 +52,7 @@ def inject_user_context():
     return {
         'current_user_name': getattr(g, 'current_user_name', None),
         'current_user_role': getattr(g, 'current_user_role', None),
+        'current_user_email': getattr(g, 'current_user_email', None),
     }
 
 app.register_blueprint(auth_bp)

@@ -4,6 +4,7 @@ from db import users
 from db import admins as admins
 from werkzeug.security import generate_password_hash, check_password_hash
 from handlers import auth_bp
+from handlers.auth_utils import require_role
 
 
 @admin_bp.route('/admin/overview')
@@ -23,6 +24,7 @@ def admin_overview():
 
 
 @admin_bp.route('/admin/users', methods=['GET'])
+@require_role('Admin')
 def admin_users():
     """Admin view: list users and support searching by email/username using ?q=term"""
     try:
@@ -48,6 +50,7 @@ def admin_users():
 
 
 @admin_bp.route('/admin/approval-rules', methods=['GET'])
+@require_role('Admin')
 def admin_approval_rules():
     try:
         rules = []
@@ -67,6 +70,7 @@ def admin_approval_rules():
 
 
 @admin_bp.route('/admin/expenses', methods=['GET'])
+@require_role('Admin')
 def admin_expenses():
     try:
         # fetch all approvals/expenses
@@ -116,6 +120,7 @@ def admin_approval_rules_create():
 
 
 @admin_bp.route('/admin/expenses/<int:aid>/override', methods=['POST'])
+@require_role('Admin')
 def admin_override_expense(aid: int):
     # Admin override: set approval status directly from admin UI
     try:
@@ -135,6 +140,7 @@ def admin_override_expense(aid: int):
         return "Error", 500
 
 @admin_bp.route('/admin/users/<int:uid>/send-password', methods=['POST'])
+@require_role('Admin')
 def admin_send_password(uid: int):
     try:
         # In a real app we'd email or reset; here we'll just log and return to users page
@@ -148,6 +154,7 @@ def admin_send_password(uid: int):
         return "Error", 500
 
 @admin_bp.route('/admin/users/<int:uid>/delete', methods=['POST'])
+@require_role('Admin')
 def admin_delete_user(uid: int):
     try:
         user = users.User.query.get(uid)
@@ -164,6 +171,7 @@ def admin_delete_user(uid: int):
 
 
 @admin_bp.route('/admin/users/create', methods=['POST'])
+@require_role('Admin')
 def admin_create_user():
     try:
         form = request.form

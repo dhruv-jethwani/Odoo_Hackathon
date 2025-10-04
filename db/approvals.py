@@ -17,6 +17,7 @@ class Approval(db.Model):
 
     approver_email = db.Column(db.String(100), nullable=True)
     approver_comments = db.Column(db.Text, nullable=True)
+    receipt_filename = db.Column(db.String(200), nullable=True)
 
     def to_dict(self):
         return {
@@ -31,6 +32,7 @@ class Approval(db.Model):
             'updated_at': None if not self.updated_at else self.updated_at.isoformat(),
             'approver_email': self.approver_email,
             'approver_comments': self.approver_comments,
+            'receipt_filename': self.receipt_filename,
         }
 
 
@@ -59,8 +61,8 @@ class ApprovalRule(db.Model):
 # CRUD functions
 # -----------------------
 
-def create_approval(requestor_email: str, description: str = None, category: str = None, amount: float = None, currency: str = None) -> Approval:
-    a = Approval(requestor_email=requestor_email, description=description, category=category, amount=amount, currency=currency)
+def create_approval(requestor_email: str, description: str = None, category: str = None, amount: float = None, currency: str = None, receipt_filename: str = None) -> Approval:
+    a = Approval(requestor_email=requestor_email, description=description, category=category, amount=amount, currency=currency, receipt_filename=receipt_filename)
     db.session.add(a)
     db.session.commit()
     return a

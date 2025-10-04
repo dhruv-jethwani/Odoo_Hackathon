@@ -9,6 +9,11 @@
         <!-- enctype added for file upload -->
         <form method="POST" action="/employee/submit" enctype="multipart/form-data" class="flex flex-col gap-4">
 
+            <!-- Hidden email: use session-derived email if available -->
+            {% if current_user_email %}
+                <input type="hidden" name="email" value="{{ current_user_email }}" />
+            {% endif %}
+
             <!-- Description -->
             <div class="flex flex-col gap-1">
                 <label class="text-sm font-medium">Description</label>
