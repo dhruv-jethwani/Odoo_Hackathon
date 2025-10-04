@@ -68,3 +68,84 @@ def admin_expenses():
     except Exception as e:
         print(f"Error fetching expenses: {e}")
         return "Error", 500
+
+
+
+@admin_bp.route('/admin/approval-rules', methods=['POST'])
+def admin_approval_rules_create():
+    # Handle form submission from admin_approve.html to create a new rule
+    try:
+        form = request.form
+        name = form.get('description') or form.get('name') or 'Approval Rule'
+        min_amount = form.get('min_amount')
+        max_amount = form.get('max_amount')
+        category = form.get('category')
+        required_approvers = form.get('required_approvers') or 1
+        # Convert numeric fields where possible
+        try:
+            min_amount = float(min_amount) if min_amount else None
+        except Exception:
+            min_amount = None
+        try:
+            max_amount = float(max_amount) if max_amount else None
+        except Exception:
+            max_amount = None
+        try:
+            required_approvers = int(required_approvers)
+        except Exception:
+            required_approvers = 1
+
+        from db import approvals as approvals_mod
+        approvals_mod.create_rule(name=name, min_amount=min_amount, max_amount=max_amount, category=category, required_approvers=required_approvers)
+        return redirect(url_for('admin.admin_approval_rules'))
+    except Exception as e:
+        print(f"Error creating approval rule: {e}")
+        return "Error", 500
+
+
+
+@admin_bp.route('/admin/expenses/<int:aid>/override', methods=['POST'])
+def admin_override_expense(aid: int):
+    # Admin override: set approval status directly from admin UI
+    try:
+        action = request.form.get('action')
+        approver_email = request.form.get('approver_email') or 'admin@company'
+        comments = request.form.get('comments')
+        if action not in ('approve', 'reject'):
+            return "Invalid action", 400
+        status = 'Approved' if action == 'approve' else 'Rejected'
+        from db import approvals as approvals_mod
+        a = approvals_mod.set_approval_status(aid, approver_email=approver_email, status=status, comments=comments)
+        if not a:
+            return "Not found", 404
+        return redirect(url_for('admin.admin_expenses'))
+    except Exception as e:
+        print(f"Error overriding expense: {e}")
+        return "Error", 500
+
+@admin_bp.route('/admin/users/<int:uid>/send-password', methods=['POST'])
+def admin_send_password(uid: int):
+    try:
+        # In a real app we'd email or reset; here we'll just log and return to users page
+        user = users.User.query.get(uid)
+        if not user:
+            return "User not found", 404
+        # TODO: send password/email reset link. For now, just redirect back.
+        return redirect(url_for('admin.admin_users'))
+    except Exception as e:
+        print(f"Error sending password: {e}")
+        return "Error", 500
+
+@admin_bp.route('/admin/users/<int:uid>/delete', methods=['POST'])
+def admin_delete_user(uid: int):
+    try:
+        user = users.User.query.get(uid)
+        if not user:
+            return "User not found", 404
+        from db import db as _db
+        _db.session.delete(user)
+        _db.session.commit()
+        return redirect(url_for('admin.admin_users'))
+    except Exception as e:
+        print(f"Error deleting user: {e}")
+        return "Error", 500

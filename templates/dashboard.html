@@ -8,75 +8,36 @@
         <div class="mb-6 flex items-center justify-between">
             <h1 class="text-3xl font-bold">Admin Dashboard</h1>
             <!-- Add User Button -->
-            <button id="openModalBtn"
-                class="bg-violet-500 hover:bg-violet-600 px-4 py-2 rounded-md transition-all duration-300">
-                + Add User
-            </button>
-        </div>
-
-        <!-- Users Table -->
-        <div class="bg-[#181818] shadow-2xl rounded-xl p-6">
-            <h2 class="text-xl font-semibold mb-4">Users</h2>
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="border-b border-zinc-700">
-                        <th class="p-2">ID</th>
-                        <th class="p-2">Name</th>
-                        <th class="p-2">Email</th>
-                        <th class="p-2">Role</th>
-                        <th class="p-2">Manager</th>
-                        <th class="p-2">Actions</th>
+                    {% if users %}
+                        {% for u in users %}
+                        <tr class="border-b border-zinc-700">
+                            <td class="p-2">{{ u.id }}</td>
+                            <td class="p-2">{{ u.username or '-' }}</td>
+                            <td class="p-2">{{ u.email }}</td>
+                            <td class="p-2">{{ u.role if u.get('role') else '-' }}</td>
+                            <td class="p-2">{{ u.manager if u.get('manager') else '-' }}</td>
+                            <td class="p-2 flex gap-2">
+                                <form method="post" action="/admin/users/{{ u.id }}/send-password" style="display:inline">
+                                    <button type="submit"
+                                        class="bg-green-500 hover:bg-green-600 transition-all duration-300 px-3 py-1 rounded-md text-sm">
+                                        Send Password
+                                    </button>
+                                </form>
+                                <form method="post" action="/admin/users/{{ u.id }}/delete" style="display:inline">
+                                    <button type="submit"
+                                        class="bg-red-500 hover:bg-red-600 transition-all duration-300 px-3 py-1 rounded-md text-sm">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <!-- No users provided; keep static placeholders -->
+                    <tr>
+                        <td colspan="6" class="p-4 text-center text-gray-600">No users to display.</td>
                     </tr>
-                </thead>
-                <tbody>
-                    <!-- Dummy Users -->
-                    <tr class="border-b border-zinc-700">
-                        <td class="p-2">1</td>
-                        <td class="p-2">Alice Johnson</td>
-                        <td class="p-2">alice@company.com</td>
-                        <td class="p-2">Manager</td>
-                        <td class="p-2">—</td>
-                        <td class="p-2 flex gap-2">
-                            <button
-                                class="bg-green-500 hover:bg-green-600 transition-all duration-300 px-3 py-1 rounded-md text-sm">
-                                Send Password
-                            </button>
-                            <button
-                                class="bg-red-500 hover:bg-red-600 transition-all duration-300 px-3 py-1 rounded-md text-sm">
-                                Delete
-                            </button>
-                        </td>
-                    </tr>
-                    <tr class="border-b border-zinc-700">
-                        <td class="p-2">2</td>
-                        <td class="p-2">Bob Smith</td>
-                        <td class="p-2">bob@company.com</td>
-                        <td class="p-2">Manager</td>
-                        <td class="p-2">—</td>
-                        <td class="p-2 flex gap-2">
-                            <button
-                                class="bg-green-500 hover:bg-green-600 transition-all duration-300 px-3 py-1 rounded-md text-sm">
-                                Send Password
-                            </button>
-                            <button
-                                class="bg-red-500 hover:bg-red-600 transition-all duration-300 px-3 py-1 rounded-md text-sm">
-                                Delete
-                            </button>
-                        </td>
-                    </tr>
-                    <tr class="border-b border-zinc-700">
-                        <td class="p-2">3</td>
-                        <td class="p-2">Charlie Brown</td>
-                        <td class="p-2">charlie@company.com</td>
-                        <td class="p-2">Employee</td>
-                        <td class="p-2">Alice Johnson</td>
-                        <td class="p-2 flex gap-2">
-                            <button
-                                class="bg-green-500 hover:bg-green-600 transition-all duration-300 px-3 py-1 rounded-md text-sm">
-                                Send Password
-                            </button>
-                            <button
-                                class="bg-red-500 hover:bg-red-600 transition-all duration-300 px-3 py-1 rounded-md text-sm">
+                    {% endif %}
                                 Delete
                             </button>
                         </td>
