@@ -80,7 +80,8 @@ def admin_expenses():
             items = [a.to_dict() for a in approvals.list_approvals(limit=500)]
         except Exception:
             items = []
-        return render_template('admin_expense.html', expenses=items, current_user_name='Admin', current_user_role='Admin')
+
+        return render_template('admin_expense.html', approvals=items, current_user_name='Admin', current_user_role='Admin')
     except Exception as e:
         print(f"Error fetching expenses: {e}")
         return "Error", 500

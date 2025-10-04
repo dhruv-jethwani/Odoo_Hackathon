@@ -27,47 +27,57 @@
                 <thead>
                     <tr class="border-b border-zinc-700">
                         <th class="p-2">ID</th>
-                        <th class="p-2">User</th>
+                        <th class="p-2">Requestor</th>
                         <th class="p-2">Description</th>
+                        <th class="p-2">Category</th>
                         <th class="p-2">Amount</th>
-                        <th class="p-2">Date</th>
+                        <th class="p-2">Created</th>
+                        <th class="p-2">Updated</th>
                         <th class="p-2">Status</th>
+                        <th class="p-2">Approver</th>
+                        <th class="p-2">Approver Comments</th>
+                        <th class="p-2">Receipt</th>
                     </tr>
                 </thead>
                 <tbody id="expenseTableBody">
-                    {% set expenses = [
-                    {'id':1, 'user':'John Doe', 'description':'Office Supplies', 'amount':120, 'date':'2025-10-01',
-                    'status':'approved'},
-                    {'id':2, 'user':'Jane Smith', 'description':'Team Lunch', 'amount':75, 'date':'2025-10-02',
-                    'status':'pending'},
-                    {'id':3, 'user':'Mike Johnson', 'description':'Travel Expenses', 'amount':200, 'date':'2025-10-03',
-                    'status':'rejected'},
-                    {'id':4, 'user':'Alice Brown', 'description':'Software Subscription', 'amount':50,
-                    'date':'2025-10-04', 'status':'approved'},
-                    {'id':5, 'user':'Bob Martin', 'description':'Client Meeting Expenses', 'amount':90,
-                    'date':'2025-10-05', 'status':'pending'}
-                    ] %}
-
-                    {% for expense in expenses %}
-                    <tr class="border-b border-zinc-700">
-                        <td class="p-2">{{ expense.id }}</td>
-                        <td class="p-2">{{ expense.user }}</td>
-                        <td class="p-2">{{ expense.description }}</td>
-                        <td class="p-2">${{ expense.amount }}</td>
-                        <td class="p-2">{{ expense.date }}</td>
-                        <td class="p-2">
-                            {% if expense.status == 'approved' %}
-                            <span class="text-green-400 font-semibold">{{ expense.status|capitalize }}</span>
-                            {% elif expense.status == 'pending' %}
-                            <span class="text-yellow-400 font-semibold">{{ expense.status|capitalize }}</span>
-                            {% elif expense.status == 'rejected' %}
-                            <span class="text-red-500 font-semibold">{{ expense.status|capitalize }}</span>
-                            {% else %}
-                            {{ expense.status }}
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
+                    {% if approvals %}
+                        {% for approval in approvals %}
+                        <tr class="border-b border-zinc-700">
+                            <td class="p-2">{{ approval.id }}</td>
+                            <td class="p-2">{{ approval.requestor_email or '-' }}</td>
+                            <td class="p-2">{{ approval.description or '-' }}</td>
+                            <td class="p-2">{{ approval.category or '-' }}</td>
+                            <td class="p-2">{{ approval.amount or 0 }} {{ approval.currency or '' }}</td>
+                            <td class="p-2">{{ approval.created_at[:10] if approval.created_at else '-' }}</td>
+                            <td class="p-2">{{ approval.updated_at[:10] if approval.updated_at else '-' }}</td>
+                            <td class="p-2">
+                                {% set st = (approval.status or '') %}
+                                {% if st.lower() == 'approved' %}
+                                    <span class="text-green-400 font-semibold">{{ approval.status }}</span>
+                                {% elif st.lower() == 'pending' %}
+                                    <span class="text-yellow-400 font-semibold">{{ approval.status }}</span>
+                                {% elif st.lower() == 'rejected' %}
+                                    <span class="text-red-500 font-semibold">{{ approval.status }}</span>
+                                {% else %}
+                                    {{ approval.status }}
+                                {% endif %}
+                            </td>
+                            <td class="p-2">{{ approval.approver_email or '-' }}</td>
+                            <td class="p-2">{{ approval.approver_comments or '-' }}</td>
+                            <td class="p-2">
+                                {% if approval.receipt_filename %}
+                                    <a href="/static/uploads/{{ approval.receipt_filename }}" class="text-sm text-violet-400">View receipt</a>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="11" class="p-4 text-center text-gray-600">No approvals to display.</td>
+                        </tr>
+                    {% endif %}
                 </tbody>
             </table>
         </div>
@@ -87,7 +97,7 @@
         for (let row of tableBody.rows) {
             const user = row.cells[1].textContent.toLowerCase();
             const description = row.cells[2].textContent.toLowerCase();
-            const status = row.cells[5].textContent.toLowerCase();
+            const status = row.cells[7].textContent.toLowerCase();
 
             const matchesSearch = user.includes(searchValue) || description.includes(searchValue);
             const matchesStatus = !statusValue || status === statusValue;
