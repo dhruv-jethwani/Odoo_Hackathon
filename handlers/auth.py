@@ -4,6 +4,7 @@ from db import users
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # 🟢 Register Route
+@auth_bp.route("/", methods=["GET"])
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "GET":
