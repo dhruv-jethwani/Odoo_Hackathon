@@ -47,7 +47,6 @@ def admin_users():
         return "An error occurred while fetching users.", 500
 
 
-
 @admin_bp.route('/admin/approval-rules', methods=['GET'])
 def admin_approval_rules():
     try:
@@ -78,7 +77,6 @@ def admin_expenses():
     except Exception as e:
         print(f"Error fetching expenses: {e}")
         return "Error", 500
-
 
 
 @admin_bp.route('/admin/approval-rules', methods=['POST'])

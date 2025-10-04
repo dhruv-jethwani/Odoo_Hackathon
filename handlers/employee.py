@@ -24,14 +24,7 @@ def employee_api_create_approval():
 
 @employee_bp.route('/employee/api/approvals', methods=['GET'])
 def employee_api_list_approvals():
-	email = request.args.get('email')
-	if not email:
-		return jsonify({'ok': False, 'error': 'email query param required'}), 400
-	status = request.args.get('status')
-	limit = request.args.get('limit', default=200, type=int)
-	items = approvals.list_approvals_by_requestor(email=email, status=status, limit=limit)
-	return jsonify({'ok': True, 'approvals': [i.to_dict() for i in items]})
-
+	return render_template('emp_submit_expense.html', current_user_name='Employee', current_user_role='Employee')
 
 
 @employee_bp.route('/employee/dashboard')
@@ -43,7 +36,6 @@ def employee_dashboard():
 	if email:
 		approvals_list = approvals.list_approvals_by_requestor(email=email)
 	return render_template('emp_view_expense.html', approvals=approvals_list, current_user_name=username or 'Employee', current_user_role='Employee')
-
 
 
 @employee_bp.route('/employee/submit', methods=['POST'])

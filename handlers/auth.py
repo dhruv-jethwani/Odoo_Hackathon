@@ -79,9 +79,6 @@ def login():
         return res
 
 
-
-
-
 @auth_bp.route('/logout')
 def logout():
     # Clear any session token for the current user if provided via query param (simple implementation)
