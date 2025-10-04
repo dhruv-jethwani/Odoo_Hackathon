@@ -2,7 +2,10 @@ from flask import Flask
 from db import db
 from db.users import User
 from handlers.auth import auth_bp
-from handlers import admin_bp, manager_bp, employee_bp
+# Import modules that declare routes so their route decorators run
+from handlers.admin import admin_bp
+from handlers.manager import manager_bp
+from handlers.employee import employee_bp
 from flask import render_template
 import os
 from dotenv import load_dotenv
